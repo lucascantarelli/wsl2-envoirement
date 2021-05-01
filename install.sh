@@ -1,18 +1,18 @@
 #!/bin/bash
 echo "Atualizando repositórios..."
-if ! apt-get update
+if ! apt-get update >/dev/null 2>&1
 then
     echo "Não foi possível atualizar os repositórios. Verifique seu arquivo /etc/apt/sources.list"
     exit 1
 fi
-if ! apt-get upgrade -y
+if ! apt-get upgrade -y >/dev/null 2>&1
 then
     echo "Não foi possível atualizar os repositórios. Verifique seu arquivo /etc/apt/sources.list"
     exit 1
 fi
 echo "Atualização feita com sucesso"
 echo "Atualizando pacotes já instalados..."
-if ! apt-get dist-upgrade -y
+if ! apt-get dist-upgrade -y >/dev/null 2>&1
 then
 	if ! dpkg --configure -a
 	then
@@ -24,16 +24,15 @@ clear
 echo "Script de Configuração do Docker"
 echo "Instalando os Pacotes Nescessarios para o Sistema."
 if ! apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common  \
-	-y
+	-y >/dev/null 2>&1
 then
 	echo "Não Foi Possivel Instalar os Pacotes a Seguir: apt-transport-https \ ca-certificates \ curl \ gnupg-agent \ software-properties-common"
 	exit 1
 fi
-sleep(2)
 clear
 echo "Script de Configuração do Docker"
 echo "Adicionando Chave GPG Oficial do Docker...."
-if ! curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+if ! curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add >/dev/null 2>&1
 then
 	echo "Houve um Erro ao Tentar Adicionar a Chave GPG do Docker."
 	exit 1
@@ -48,28 +47,27 @@ then
 	exit 1
 fi
 echo "Assinatura Digital OK."
-
+clear
+echo "Script de Configuração do Docker"
 echo "Adicionando Repositorio  x86_64 / amd64"
 if ! add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) \
-	stable"
+	stable" >/dev/null 2>&1
 then
 	echo "Não Foi Possivel Adicionar o Repositorio do Docker."
 	exit 1
 fi
-echo "Repositorio Adicionando com Sucesso."
-sleep(2)
 clear
 echo "Script de Configuração do Docker"
+echo "Repositorio Adicionando com Sucesso."
 echo "Atualizando repositórios..."
-if ! apt-get update
+if ! apt-get update >/dev/null 2>&1
 then
     echo "Não foi possível atualizar os repositórios. Verifique seu arquivo /etc/apt/sources.list"
     exit 1
 fi
 echo "Atualização feita com sucesso"
-
 echo "Instalando os Pacotes: docker-ce docker-ce-cli containerd.io"
-if ! apt-get install docker-ce docker-ce-cli containerd.io docker-compose -y
+if ! apt-get install docker-ce docker-ce-cli containerd.io docker-compose -y >/dev/null 2>&1
 then
 	echo "Erro na Instalação dos Pacotes: apt-get install docker-ce docker-ce-cli containerd.io"
 	exit 1
@@ -77,11 +75,10 @@ fi
 clear
 echo "Script de Configuração do Docker"
 echo "Docker Instalado com Sucesso, os seguintes pacotes foram adicionados: docker-ce docker-ce-cli containerd.io"
-sleep(2)
 clear
 echo "Script de Configuração do Docker"
 echo "Instalando os Pacotes: Python"
-if ! apt-get install -y python3-pip build-essential libssl-dev libffi-dev python-dev python3-venv
+if ! apt-get install -y python3-pip build-essential libssl-dev libffi-dev python-dev python3-venv >/dev/null 2>&1
 then
 	echo "Erro na Instalação dos Pacotes: apt-get install docker-ce docker-ce-cli containerd.io"
 	exit 1
@@ -89,7 +86,7 @@ fi
 clear
 echo "Script de Configuração do Docker"
 echo "Python Instalado com Sucesso, os seguintes pacotes foram adicionados: python3-pip build-essential libssl-dev libffi-dev python-dev python3-venv"
-sleep(2)
+sleep 2
 clear
 echo "Script de Configuração do Docker"
 if ! sudo systemctl enable docker.service
@@ -100,7 +97,7 @@ if ! sudo chmod -R 777 /var/run/docker.sock
 then
 	echo "Permissão Negada !"
 fi
-if ! sudo service docker start
+if ! sudo service docker start >/dev/null 2>&1
 then
 	echo "Não foi possivel iniciar o docker"
 fi
@@ -109,7 +106,10 @@ if ! sudo service docker status
 then
 	echo "Docker Não Iniciado !"
 fi
-
-
-sudo docker swarm init
-docker node inspect self --format '{{ .Status.Addr  }}'
+if sudo docker swarm init >/dev/null 2>&1
+then
+	docker node inspect self --format '{{ .Status.Addr  }}'
+elif ! sudo docker swarm init >/dev/null 2>&1
+then
+	echo "Swarm Iniciado no IP: $(docker node inspect self --format '{{ .Status.Addr  }}')"
+fi
