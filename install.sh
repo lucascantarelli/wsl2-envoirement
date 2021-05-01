@@ -1,5 +1,4 @@
 #!/bin/bash
-
 echo "Atualizando repositórios..."
 if ! apt-get update
 then
@@ -21,7 +20,8 @@ then
 		exit 1
 	fi
 fi
-
+clear
+echo "Script de Configuração do Docker"
 echo "Instalando os Pacotes Nescessarios para o Sistema."
 if ! apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common  \
 	-y
@@ -29,13 +29,15 @@ then
 	echo "Não Foi Possivel Instalar os Pacotes a Seguir: apt-transport-https \ ca-certificates \ curl \ gnupg-agent \ software-properties-common"
 	exit 1
 fi
-
+sleep(2)
+clear
+echo "Script de Configuração do Docker"
 echo "Adicionando Chave GPG Oficial do Docker...."
 if ! curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 then
 	echo "Houve um Erro ao Tentar Adicionar a Chave GPG do Docker."
 	exit 1
-fi	
+fi
 clear
 echo "Chave Adicionada !"
 
@@ -50,12 +52,14 @@ echo "Assinatura Digital OK."
 echo "Adicionando Repositorio  x86_64 / amd64"
 if ! add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) \
 	stable"
-then 
+then
 	echo "Não Foi Possivel Adicionar o Repositorio do Docker."
 	exit 1
-fi	
+fi
 echo "Repositorio Adicionando com Sucesso."
-
+sleep(2)
+clear
+echo "Script de Configuração do Docker"
 echo "Atualizando repositórios..."
 if ! apt-get update
 then
@@ -66,36 +70,43 @@ echo "Atualização feita com sucesso"
 
 echo "Instalando os Pacotes: docker-ce docker-ce-cli containerd.io"
 if ! apt-get install docker-ce docker-ce-cli containerd.io docker-compose -y
-then 
+then
 	echo "Erro na Instalação dos Pacotes: apt-get install docker-ce docker-ce-cli containerd.io"
 	exit 1
-fi	
-echo "Docker Instalado com Sucesso, os seguintes pacotes foram adicionados: docker-ce docker-ce-cli containerd.io"
-
+fi
 clear
+echo "Script de Configuração do Docker"
+echo "Docker Instalado com Sucesso, os seguintes pacotes foram adicionados: docker-ce docker-ce-cli containerd.io"
+sleep(2)
+clear
+echo "Script de Configuração do Docker"
 echo "Instalando os Pacotes: Python"
 if ! apt-get install -y python3-pip build-essential libssl-dev libffi-dev python-dev python3-venv
-then 
+then
 	echo "Erro na Instalação dos Pacotes: apt-get install docker-ce docker-ce-cli containerd.io"
 	exit 1
-fi	
-echo "Docker Instalado com Sucesso, os seguintes pacotes foram adicionados: docker-ce docker-ce-cli containerd.io"
-
+fi
+clear
+echo "Script de Configuração do Docker"
+echo "Python Instalado com Sucesso, os seguintes pacotes foram adicionados: python3-pip build-essential libssl-dev libffi-dev python-dev python3-venv"
+sleep(2)
+clear
+echo "Script de Configuração do Docker"
 if ! sudo systemctl enable docker.service
-then 
+then
 	echo "Não foi possivel adicionar na Inicialização"
 fi
 if ! sudo chmod -R 777 /var/run/docker.sock
-then 
+then
 	echo "Permissão Negada !"
 fi
 if ! sudo service docker start
-then 
+then
 	echo "Não foi possivel iniciar o docker"
 fi
 clear
-if ! docker run hello-world 
-then 
+if ! sudo service docker status
+then
 	echo "Docker Não Iniciado !"
 fi
 
