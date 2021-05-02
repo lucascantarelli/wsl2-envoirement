@@ -1,4 +1,6 @@
 #!/bin/bash
+clear
+echo "Script de Configuração do Docker"
 echo "Atualizando repositórios..."
 if ! apt-get update >/dev/null 2>&1
 then
