@@ -108,10 +108,3 @@ if ! sudo service docker status
 then
 	echo "Docker Não Iniciado !"
 fi
-if sudo docker swarm init >/dev/null 2>&1
-then
-	docker node inspect self --format '{{ .Status.Addr  }}'
-elif ! sudo docker swarm init >/dev/null 2>&1
-then
-	echo "Swarm Iniciado no IP: $(docker node inspect self --format '{{ .Status.Addr  }}')"
-fi
